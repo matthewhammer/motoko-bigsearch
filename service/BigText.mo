@@ -53,4 +53,15 @@ actor {
     case (#err(_)) { null };
     }
   };
+
+
+  // TEMP ----------
+
+  public func selfTest() {
+    Debug.print "hello"
+  };
+
+  public func doNextCall() : async Bool {
+    false
+  };
 }
