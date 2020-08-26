@@ -1,18 +1,69 @@
-/* temp: boiler plate service
-*/
-import Debug "mo:base/Debug";
-actor {
-      
-  // temp
-  var count = 0;
+import Sequence "mo:sequence/Sequence";
+import Db "mo:crud/Database";
 
-  public func doNextCall() : async Bool {
-    count += 1;
-    if (count > 3) false else true
+import Debug "mo:base/Debug";
+import Nat "mo:base/Nat";
+import Hash "mo:base/Hash";
+import Result "mo:base/Result";
+
+actor {
+
+  // temp
+  flexible var count = 0;
+
+  public type Id = Nat;
+
+  // sequence of text
+  public type TextSeq = Sequence.Sequence<Text>;
+
+  let append = Sequence.defaultAppend();
+
+  // database of text
+  flexible var db = Db.Database<Nat, TextSeq>(
+    func (_, last) {
+      switch last {
+      case null 0;
+      case (?last) { last + 1 };
+    }},
+    Nat.equal,
+    #hash(Hash.hash),
+  );
+
+  /// create a new text sequence
+  public func create(t : Text) : async Id {
+    db.create(Sequence.make(t))
   };
 
-  public func selfTest() : () {
-     // to do
-     Debug.print "success"
+  /// append to existing text sequence
+  public func addText(id : Id, t : Text) : async Bool {
+    switch (db.read(id)) {
+      case (#ok(seq)) {
+             let seq2 = append<Text>(seq, Sequence.make(t));
+             switch (db.update(id, seq2)) {
+               case (#ok(())) { true };
+               case _ { false };
+             }
+           };
+      case (#err(e)) { false };
+    }
+  };
+
+  /// read a text sequence
+  public func read(id : Id) : async ?TextSeq {
+    switch (db.read(id)) {
+    case (#ok(seq)) { ?seq };
+    case (#err(_)) { null };
+    }
+  };
+
+
+  // TEMP ----------
+
+  public func selfTest() {
+    Debug.print "hello"
+  };
+
+  public func doNextCall() : async Bool {
+    false
   };
 }
