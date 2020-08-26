@@ -16,6 +16,8 @@ actor {
   // sequence of text
   public type TextSeq = Sequence.Sequence<Text>;
 
+  let append = Sequence.defaultAppend();
+
   // database of text
   flexible var db = Db.Database<Nat, TextSeq>(
     func (_, last) {
@@ -36,7 +38,7 @@ actor {
   public func addText(id : Id, t : Text) : async Bool {
     switch (db.read(id)) {
       case (#ok(seq)) {
-             let (seq2, _) = Sequence.add(seq, t);
+             let seq2 = append<Text>(seq, Sequence.make(t));
              switch (db.update(id, seq2)) {
                case (#ok(())) { true };
                case _ { false };
