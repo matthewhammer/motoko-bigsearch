@@ -14,6 +14,7 @@ actor {
   public type Id = Nat;
 
   // sequence of text
+
   public type TextSeq = Sequence.Sequence<Text>;
 
   let append = Sequence.defaultAppend();
@@ -34,7 +35,15 @@ actor {
     db.create(Sequence.make(t))
   };
 
-  /// append to existing text sequence
+  /// delete a text sequence
+  public func delete(id : Id) : async Bool {
+    switch (db.delete(id)) {
+      case (#ok(_)) true;
+      case (#err(_)) false;
+    }
+  };
+
+  /// append to an existing text sequence
   public func addText(id : Id, t : Text) : async Bool {
     switch (db.read(id)) {
       case (#ok(seq)) {
@@ -48,14 +57,34 @@ actor {
     }
   };
 
+
   /// read a text sequence
-  public func read(id : Id) : async ?TextSeq {
+  public func readText(id : Id) : async ?TextSeq {
     switch (db.read(id)) {
     case (#ok(seq)) { ?seq };
     case (#err(_)) { null };
     }
   };
 
+  /// read a text sequence slice
+  public func readSlice(id : Id, pos : Nat, size : Nat) : async ?TextSeq {
+    switch (db.read(id)) {
+    case (#ok(seq)) { ?seq }; // to do -- fix this code
+    case (#err(_)) { null };
+    }
+  };
+
+  // to do -- more CRUD slice messages: putSlice, deleteSlice
+  //   Use mo:sequence
+
+  // to do -- top words (rank all words, by freq, across all db)
+  //   Use mo:sequence/Sort and mo:sequence/TextSeq
+  //         tokens - get all words
+  //         sort   - put words into lex order
+  //         count  - count words that appear more than once
+  //         sort   - sort word-count pairs by their count
+
+  // to do -- search words (find word in ranking, and give ids for CRUD)
 
   // TEMP ----------
 
