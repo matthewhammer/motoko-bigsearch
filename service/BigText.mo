@@ -14,13 +14,18 @@ actor {
   public type Id = Nat;
 
   // sequence of text
-
   public type TextSeq = Sequence.Sequence<Text>;
+
+  public type TextFile = {
+    name : ?Text; // perhaps un-needed?
+    meta : ?Text; // e.g., CanCan stores video ID here (or whatever helps render search results visually)
+    var content : TextSeq; // e.g., CanCan stores some video-related text here, like a comment, explicit hashtag(s), etc
+  };
 
   let append = Sequence.defaultAppend();
 
   // database of text
-  flexible var db = Db.Database<Nat, TextSeq>(
+  flexible var db = Db.Database<Nat, TextFile>(
     func (_, last) {
       switch last {
       case null 0;
@@ -31,8 +36,8 @@ actor {
   );
 
   /// create a new text sequence
-  public func create(t : Text) : async Id {
-    db.create(Sequence.make(t))
+  public func create(n : ?Text, m : ?Text, c : Text) : async Id {
+    db.create({ name = n; meta = m; var content = Sequence.make(c)})
   };
 
   /// delete a text sequence
@@ -46,32 +51,44 @@ actor {
   /// append to an existing text sequence
   public func addText(id : Id, t : Text) : async Bool {
     switch (db.read(id)) {
-      case (#ok(seq)) {
-             let seq2 = append<Text>(seq, Sequence.make(t));
-             switch (db.update(id, seq2)) {
-               case (#ok(())) { true };
-               case _ { false };
-             }
+      case (#ok(file)) {
+             file.content := append(file.content, Sequence.make(t));
+             true
            };
       case (#err(e)) { false };
     }
   };
 
 
-  /// read a text sequence
+  /// read a text sequence (to do -- "flatten"/simplify to Text, for easier JS usage)
   public func readText(id : Id) : async ?TextSeq {
     switch (db.read(id)) {
-    case (#ok(seq)) { ?seq };
+    case (#ok(file)) { ?file.content };
     case (#err(_)) { null };
     }
   };
 
-  /// read a text sequence slice
+  /// read a text sequence slice (to do -- "flatten"/simplify to Text, for easier JS usage)
   public func readSlice(id : Id, pos : Nat, size : Nat) : async ?TextSeq {
     switch (db.read(id)) {
-    case (#ok(seq)) { ?seq }; // to do -- fix this code
+    case (#ok(file)) { ?file.content }; // to do -- fix this code
     case (#err(_)) { null };
     }
+  };
+
+  // SearchResult is nearly the entire file,
+  // but instead of full content,
+  // uses only the position of search result in that content
+  public type SearchResult = {
+    file : Id;
+    name : ?Text;
+    meta : ?Text;
+    pos : Nat;
+  };
+
+  public func search(q : Text) : async [SearchResult] {
+    // to do
+    [ ]
   };
 
   // to do -- more CRUD slice messages: putSlice, deleteSlice
