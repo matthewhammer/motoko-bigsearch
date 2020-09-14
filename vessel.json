@@ -1,6 +1,6 @@
 {
- "name": "BigText",
-  "repo": "git@github.com:dfinity/motoko-bigtext",
+ "name": "bigsearch",
+  "repo": "git@github.com:dfinity/motoko-bigsearch",
   "version": "v0.0.1",
   "dependencies": ["base", "crud", "sequence"]
 }
