@@ -1,7 +1,7 @@
 {
   "canisters": {
-    "BigText": {
-      "main": "service/BigText.mo"
+    "BigSearch": {
+      "main": "service/BigSearch.mo"
     }
   },
   "defaults": {
