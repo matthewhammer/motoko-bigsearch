@@ -2,7 +2,7 @@
   "canisters": {
     "BigSearch": {
        "main": ".vessel/sequence/search/service/BigSearch.mo"
-    },
+    }
   },
   "defaults": {
     "build": {
