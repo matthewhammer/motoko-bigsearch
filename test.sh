@@ -13,14 +13,14 @@ echo
 echo == Start service.
 echo
 
-dfx canister install BigText
+dfx canister install BigSearch
 
 echo
 echo == Test service.
 echo
 
-dfx canister call BigText selfTest
+dfx canister call BigSearch selfTest
 LOOP="(true)";
 while [ "$LOOP" == "(true)" ]; do
-    LOOP=$(dfx canister call BigText doNextCall)
+    LOOP=$(dfx canister call BigSearch doNextCall)
 done
