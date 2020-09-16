@@ -14,7 +14,7 @@
   {
     "name": "sequence",
     "repo": "https://github.com/matthewhammer/motoko-sequence",
-    "version": "master",
+    "version": "search",
     "dependencies": []
   },
   {
